@@ -66,7 +66,7 @@ GitHub 远程仓库（备份、协作、展示）
 
 ### 模块 4：发布 `AI_Agent` 到 GitHub
 
-学习内容：GitHub 仓库、远程地址 `origin`、`git push`、`git pull`、认证方式。
+学习内容：GitHub 仓库、远程地址 `origin`、Git 作者身份、GitHub 登录认证、`git push`、`git pull`。
 
 首次发布流程：
 
@@ -75,12 +75,54 @@ GitHub 远程仓库（备份、协作、展示）
 3. 在根目录创建并检查 `.gitignore`，确保不会提交以下敏感或本地生成文件：`.env`、API Key、虚拟环境、`__pycache__/`、日志、模型权重与大型数据集。
 4. 提交希望公开的学习代码和文档。
 5. 添加远程仓库：`git remote add origin <你的 GitHub 仓库地址>`。
-6. 确认默认分支名后首次推送：`git push -u origin main`。
+6. 使用 `git branch --show-current` 确认主分支名后首次推送：`git push -u origin <主分支名>`。
 7. 在 GitHub 网页确认文件、提交记录与 README 显示正常。
+
+账号与配置：
+
+Git 的远程地址、提交作者和登录认证是三个相互独立的概念：
+
+| 配置 | 作用 | 查看方式 |
+| --- | --- | --- |
+| `origin` | 指定代码拉取和推送的远程仓库地址 | `git remote -v` |
+| `user.name`、`user.email` | 写入新 commit 的作者名称和邮箱 | `git config user.name`、`git config user.email` |
+| Credential Manager | 保存 GitHub HTTPS 登录授权，决定当前账号是否有权推送 | `git config --show-origin --get-all credential.helper` |
+
+`origin` 只是远程地址的常用别名，不代表登录账号。首次执行 `git push -u origin <主分支名>` 后，本地分支会跟踪对应的远程分支；以后通常可以直接执行 `git push` 和 `git pull`。
+
+Git 本身没有统一的“登录账号”。`user.name` 和 `user.email` 只标记提交作者，并不参与 GitHub 登录。为了让命令行提交正确关联到 GitHub 账号，可以在 GitHub 的 `Settings → Emails` 页面复制经过验证的邮箱，或使用 GitHub 提供的 `noreply` 邮箱，然后设置全局作者信息：
+
+```bash
+git config --global user.name "<你的 GitHub 用户名或展示名称>"
+git config --global user.email "<你的 GitHub 邮箱或 noreply 邮箱>"
+```
+
+配置分为 `system`、`global` 和 `local` 三个常见层级；仓库的 `local` 配置会覆盖用户级的 `global` 配置。使用以下命令检查实际生效的作者信息及其来源：
+
+```bash
+git config --show-origin --show-scope --get-regexp "^user\.(name|email)$"
+git log -1 --format="作者：%an <%ae>"
+```
+
+如果某个仓库仍保留旧的作者配置，可以先查看：
+
+```bash
+git config --local --get user.name
+git config --local --get user.email
+```
+
+确认不再需要后，删除仓库级覆盖，让它继承新的全局配置：
+
+```bash
+git config --local --unset user.name
+git config --local --unset user.email
+```
+
+修改作者配置只影响未来创建的提交，不会自动修改已有提交的作者信息。
 
 > 安全规则：绝不提交 API Key、密码、Token 或 `.env` 文件。即使仓库设为私有，也应把密钥保留在本地环境变量中。
 
-完成标准：能够在 GitHub 网页看到完整项目、提交历史和本 README。
+完成标准：能够在 GitHub 网页看到完整项目、提交历史和本 README；能够解释 `origin`、提交作者与登录认证的区别，并确认新提交已关联到正确的 GitHub 作者信息。
 
 ### 模块 5：每次学习后的固定同步流程
 
