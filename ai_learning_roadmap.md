@@ -8,23 +8,28 @@
 
 ```mermaid
 graph TD
-    A[先修基础: Git -> Docker -> ML -> RL] --> B[阶段 1: 数理与 Python 进阶]
+    A[基础模块: Python -> Python 进阶 -> 工程工具] --> B[阶段 1: 数理与经典 ML]
     B --> C[阶段 2: 深度学习与 NLP 核心]
     C --> D[阶段 3: LLM 应用与 RAG 落地]
     D --> E[阶段 4: AI Agent 复杂系统设计]
     E --> F[阶段 5: 部署优化与简历项目]
 ```
 
-### 🔧 智能体先修课与目录结构
-在进入大模型和 Agent 实际开发前，请按照以下顺序完成核心工程与算法筑基。我们已在工作区为你建立了对应的实践文件夹：
+### 🔧 基础模块与建议顺序
+在进入大模型和 Agent 实际开发前，先完成三项基础模块。工程工具可优先从 Git 开始学习，并在后续每个阶段持续使用。
 
-1. **Git 版本控制** ([01_Engineering_Tools/Git_Practice](file:///home/fire/AI_Agent/01_Engineering_Tools/Git_Practice))
-   - **为什么学**：Agent 代码迭代迅速，团队协作与版本回滚是工程开发的生命线。
-2. **Docker 容器化** ([01_Engineering_Tools/Docker_Practice](file:///home/fire/AI_Agent/01_Engineering_Tools/Docker_Practice))
-   - **为什么学**：Chroma/Milvus 向量库、Redis 缓存、以及 Agent 运行所需的隔离执行沙箱，都需要利用 Docker 快速搭建和隔离运行。
-3. **经典机器学习 (ML)** ([02_Machine_Learning](file:///home/fire/AI_Agent/02_Machine_Learning))
+1. **Python 基础**（`00_Python`）
+   - 掌握基础语法、函数、文件操作、异常处理和 OOP；以 Todo 项目作为阶段验收。
+2. **Python 进阶与数据处理**（`00_Python_Advanced`）
+   - 学习计划：[python_advanced_data_plan.md](00_Python_Advanced/python_advanced_data_plan.md)；内容清单：[learning_content_outline.md](00_Python_Advanced/learning_content_outline.md)。
+3. **工程工具**（`01_Engineering_Tools`）
+   - 先完成 Git 与 GitHub 工作流，再学习 Docker；每次学习后将清晰、无敏感信息的成果提交并推送。
+
+随后完成以下算法基础：
+
+4. **经典机器学习 (ML)** (`02_Machine_Learning`)
    - **为什么学**：大模型的损失函数、评估指标（Precision/Recall/F1）、梯度下降、欠拟合与过拟合等基本概念都继承自经典 ML。建议使用 `scikit-learn` 动手实现回归与分类模型。
-4. **强化学习 (RL)** ([03_Reinforcement_Learning](file:///home/fire/AI_Agent/03_Reinforcement_Learning))
+5. **强化学习 (RL)** (`03_Reinforcement_Learning`)
    - **为什么学**：现代大模型的对齐技术（RLHF/DPO/GRPO）和推理大模型（如 OpenAI o1, DeepSeek-R1）底层的“自我反思与推理链训练”，本质上都是强化学习在发挥作用。必须搞懂 MDP、策略与价值函数、以及 PPO 算法框架。
 
 ---
