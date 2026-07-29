@@ -66,9 +66,11 @@ def countdown(start: int) -> Iterator[int]:
     提示：
         yield 会暂停函数，并保存当前局部变量和执行位置。
     """
-
-    # TODO: 请独立完成
-    raise NotImplementedError
+    if start < 0:
+        raise ValueError("start 必须是非负整数")
+    for num in range(start, 0, -1):
+        # print(f"yielding {num}")
+        yield num
 
 
 # ---------------------------------------------------------------------------
@@ -87,9 +89,9 @@ def read_large_file(file_path: str | Path) -> Iterator[str]:
         文件对象本身就是可迭代对象。
         可以使用 line.rstrip("\\n")，注意不要删除行首空格。
     """
-
-    # TODO: 请独立完成
-    raise NotImplementedError
+    with open(file_path,'r',encoding = 'utf-8') as f:
+        for line in f:
+            yield line.rstrip("\n")
 
 
 # ---------------------------------------------------------------------------
@@ -115,9 +117,13 @@ def filter_lines(
     思考：
         为什么参数写成 Iterable[str]，返回值写成 Iterator[str]？
     """
+    if not keyword:
+        raise ValueError("keyword 不能为空字符串")
 
-    # TODO: 请独立完成
-    raise NotImplementedError
+    for temp_str in lines:
+        # print(f"checking line: {temp_str}")
+        if keyword.lower() in temp_str.lower():
+            yield temp_str
 
 
 # ---------------------------------------------------------------------------
@@ -138,9 +144,8 @@ def flatten(groups: Iterable[Iterable[T]]) -> Iterator[T]:
         list(flatten([("a", "b"), ("c",)]))
         == ["a", "b", "c"]
     """
-
-    # TODO: 请独立完成
-    raise NotImplementedError
+    for group in groups:
+        yield from group
 
 
 # ---------------------------------------------------------------------------
@@ -160,9 +165,14 @@ def fibonacci(count: int) -> Iterator[int]:
         list(fibonacci(1)) == [0]
         list(fibonacci(7)) == [0, 1, 1, 2, 3, 5, 8]
     """
+    if count < 0:
+        raise ValueError("count 必须是非负整数")
 
-    # TODO: 请独立完成
-    raise NotImplementedError
+    a, b = 0, 1
+    for _ in range(count):
+        yield a
+        a,b = b, a + b
+
 
 
 # ---------------------------------------------------------------------------
@@ -176,9 +186,8 @@ def find_errors(file_path: str | Path) -> Iterator[str]:
     2. 不要重复实现文件读取或过滤规则；
     3. 尝试使用 yield from。
     """
-
-    # TODO: 请独立完成
-    raise NotImplementedError
+    line = read_large_file(file_path)
+    yield from filter_lines(line, "ERROR")
 
 
 def run_checks() -> None:
@@ -208,11 +217,11 @@ def run_checks() -> None:
         else:
             raise AssertionError("负数参数应当抛出 ValueError")
 
-    print("基础验收通过。请继续手动验证文件读取和综合题。")
+    # print("基础验收通过。请继续手动验证文件读取和综合题。")
 
 
 if __name__ == "__main__":
     memory_comparison()
 
     # 完成所有题目后，取消下一行注释：
-    # run_checks()
+    run_checks()
