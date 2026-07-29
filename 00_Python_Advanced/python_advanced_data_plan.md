@@ -41,9 +41,11 @@
 │   ├── 05_asyncio.py
 │   └── 06_context_managers.py        # 后续新增
 └── data_science_stack/
+    ├── README.md
     ├── 01_numpy_basics.py
-    ├── 02_pandas_basics.py            # 后续新增
-    ├── 03_visualization.py            # 后续新增
+    ├── 02_pandas_basics.py
+    ├── 03_visualization.py
+    ├── analysis_findings.md
     └── sample_data/                   # 小型练习数据；不存放敏感或大型数据
 ```
 

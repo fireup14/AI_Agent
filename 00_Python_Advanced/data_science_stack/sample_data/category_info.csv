@@ -1,0 +1,6 @@
+category,category_manager,target_margin
+Books,Manager A,0.35
+Electronics,Manager B,0.22
+Home,Manager C,0.28
+Sports,Manager D,0.30
+Unknown,Unassigned,0.00
