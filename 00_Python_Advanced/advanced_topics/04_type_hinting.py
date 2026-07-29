@@ -5,11 +5,11 @@
 # 目标是使代码能够通过 mypy 的静态检查。
 # 提示：从 typing 模块中导入 List, Dict, Tuple, Optional, Union, Callable
 
-from typing import List, Dict, Tuple, Optional, Union, Callable
+from typing import List, Dict, Tuple, Any, Optional, Union, Callable
 
 # 1. 基础变量与函数标注
 # 任务：为 add 函数及其参数和返回值添加类型提示。
-def add(a, b):
+def add(a:int, b:int) -> int:
     return a + b
 
 
@@ -17,7 +17,7 @@ def add(a, b):
 # 任务：为 process_user_data 函数添加类型提示。
 # - user_info 应该是一个字典，键为字符串，值为任意类型 (可以使用 Union 或 Any)。
 # - 函数返回一个元组，包含一个字符串（用户名）和整型（年龄）。
-def process_user_data(user_info):
+def process_user_data(user_info:Dict[str,Any]) -> Tuple[str,int]:
     username = user_info.get("name", "Unknown")
     age = user_info.get("age", 0)
     return username, age
@@ -28,7 +28,7 @@ def process_user_data(user_info):
 # - items 应该是一个字符串列表。
 # - target 应该是一个字符串。
 # - 返回值可以是整型索引，也可以是 None (提示: 使用 Optional 或 Union)。
-def find_item(items, target):
+def find_item(items:List[str], target:str) -> int | None: # 也可以是 -> Optional[int]   或 -> Union[int,None]
     try:
         return items.index(target)
     except ValueError:
@@ -38,7 +38,7 @@ def find_item(items, target):
 # 4. 类与对象标注
 # 任务：为 Task 类的方法添加类型提示（包括构造函数 __init__ 的返回值标注 -> None）。
 class Task:
-    def __init__(self, title, priority=1):
+    def __init__(self, title:str, priority:int=1) -> None:
         self.title = title
         self.priority = priority
         self.completed = False
