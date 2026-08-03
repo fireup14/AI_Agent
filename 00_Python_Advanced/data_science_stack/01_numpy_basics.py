@@ -61,10 +61,19 @@ def reshape_and_filter(values: npt.ArrayLike) -> tuple[FloatArray, FloatArray]:
         matrix.shape == (3, 4)
         selected == [6, 7, 8, 9, 10, 11]
     """
+    array = np.asarray(values,dtype=np.float64)
+    # print(array)
 
-    # TODO: 请独立完成
-    raise NotImplementedError
+    if array.size != 12:
+        raise ValueError("数组并非恰好包含 12 个元素")
+    
+    reshape_arr = array.reshape(3,-1)
+    # print(reshape_arr)
 
+    filter_arr = array[array>array.mean()]
+    # print(filter_arr)
+
+    return (reshape_arr,filter_arr)
 
 def manual_matrix_multiply(
     matrix_a: FloatArray,
@@ -81,9 +90,25 @@ def manual_matrix_multiply(
 
     完成后使用 ``matrix_a @ matrix_b`` 验证结果。
     """
+    if (matrix_a.ndim != 2) or (matrix_b.ndim != 2):
+        raise ValueError("两个矩阵维度不匹配")
 
-    # TODO: 请独立完成
-    raise NotImplementedError
+    ( end_line , colu) = matrix_a.shape
+    ( line , end_clou) = matrix_b.shape
+
+    if colu != line:
+        raise ValueError("矩阵无法进行乘法运算")
+
+    result = np.zeros((end_line,end_clou),dtype=np.float64)
+    for i in range(end_line):
+        for j in range(end_clou):
+            for num in range(line):
+                result[i,j] += (
+                    matrix_a[i,num] * matrix_b[num,j]
+                )
+    return result
+
+
 
 
 def zscore_normalize(data: FloatArray) -> FloatArray:
@@ -99,9 +124,18 @@ def zscore_normalize(data: FloatArray) -> FloatArray:
     验收：
         标准化后每列均值应接近 0，标准差应接近 1。
     """
+    if data.ndim != 2:
+        raise ValueError("data不是二维数组")
 
-    # TODO: 请独立完成
-    raise NotImplementedError
+    mean = data.mean(axis = 0)
+    std = data.std(axis = 0)
+
+    if np.any(np.isclose(std,0.0)):
+        raise ValueError("某列标准差为 0")
+
+    z_score= (data - mean) / std
+    return z_score
+
 
 
 def run_checks() -> None:
@@ -133,4 +167,4 @@ if __name__ == "__main__":
     demonstrate_matrix_multiplication()
 
     # 完成全部题目后取消下一行注释：
-    # run_checks()
+    run_checks()
