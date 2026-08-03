@@ -27,3 +27,18 @@ python 00_Python_Advanced/data_science_stack/03_visualization.py
 - `category_info.csv`：用于练习 `merge()` 的品类维表。
 
 生成的图表放入 `charts/`。该目录会在绘图代码运行时创建。
+
+
+pandas学习
+    Series、DataFrame
+    read_csv()、head()、info()、describe()
+    列选择、loc、iloc
+    布尔条件筛选
+    缺失值和重复值
+    类型转换
+    创建计算列
+    排序与 Top N
+    groupby()、agg()
+    merge()
+    日期处理
+    保存清洗结果
