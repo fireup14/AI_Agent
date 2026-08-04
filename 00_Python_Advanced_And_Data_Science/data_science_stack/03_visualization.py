@@ -56,9 +56,35 @@ def plot_daily_sales(
     5. 使用 tight_layout()，保存后关闭 Figure；
     6. 返回图片路径。
     """
+    output_path = Path(output_dir) / "daily_sales.png"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # TODO: 请独立完成
-    raise NotImplementedError
+    daily_sales = sales.groupby(
+        "order_date",
+        as_index=False,
+        sort=True,
+        dropna=True,
+    ).agg(
+        sales_amount = ("sales_amount","sum"),
+    )
+
+    figure, axes = plt.subplots(
+        figsize=(8, 5),
+    )
+    figure.autofmt_xdate()
+    axes.plot(
+        daily_sales["order_date"],
+        daily_sales["sales_amount"],
+        marker="o",
+    )
+    axes.set_title("Daily Sales Trend")
+    axes.set_xlabel("Order Date")
+    axes.set_ylabel("Sales Amount")
+    axes.grid(True)
+    figure.tight_layout()
+    figure.savefig(output_path)
+    plt.close(figure)
+    return output_path
 
 
 def plot_category_sales(
@@ -70,9 +96,32 @@ def plot_category_sales(
     要求按销售额降序排列，添加标题和坐标轴，
     保存为 category_sales.png 并返回图片路径。
     """
+    output_path = Path(output_dir) / "category_sales.png"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # TODO: 请独立完成
-    raise NotImplementedError
+    category_sales  = sales.groupby(
+        by = "category",
+        as_index=False,
+    ).agg(
+        total_sales = ("sales_amount","sum"),
+    )
+
+    category_sales  = category_sales.sort_values(by="total_sales",ascending=False)
+
+    figure,axes = plt.subplots()
+    bars = axes.bar(
+        category_sales["category"],
+        category_sales["total_sales"],
+    )
+    axes.bar_label(bars,fmt="%.0f",padding=3)
+    axes.set_title("Sales by Category")
+    axes.set_xlabel("Category")
+    axes.set_ylabel("Total Sales")
+    axes.grid(True)
+    figure.tight_layout()
+    figure.savefig(output_path)
+    plt.close(figure)
+    return output_path
 
 
 def plot_price_quantity_relationship(
@@ -87,9 +136,28 @@ def plot_price_quantity_relationship(
     3. 添加标题、坐标轴和图例；
     4. 保存为 price_quantity_scatter.png 并返回路径。
     """
+    output_path = Path(output_dir) / "price_quantity_scatter.png"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # TODO: 请独立完成
-    raise NotImplementedError
+    figure,axes = plt.subplots()
+    sns.scatterplot(
+        data = sales,
+        x = "unit_price",
+        y = "quantity",
+        hue = "category",
+        palette = "tab10",
+        s = 80,
+        marker = 'o',
+        ax = axes,
+    )
+    axes.set_title("Unit Price vs Order Quantity")
+    axes.set_xlabel("Unit Price")
+    axes.set_ylabel("Order Quantity")
+    axes.grid(True)
+    figure.tight_layout()
+    figure.savefig(output_path)
+    plt.close(figure)
+    return output_path
 
 
 def plot_correlation_heatmap(
@@ -101,9 +169,39 @@ def plot_correlation_heatmap(
     选择 unit_price、quantity、sales_amount，计算 corr()，
     使用 seaborn.heatmap() 显示数值，保存为 correlation_heatmap.png。
     """
+    output_path = Path(output_dir) / "correlation_heatmap.png"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # TODO: 请独立完成
-    raise NotImplementedError
+    numeric_data = sales[
+        [
+            "unit_price",
+            "quantity",
+            "sales_amount",
+        ]
+    ]
+    correlation = numeric_data.corr()
+    figure,axes = plt.subplots()
+    sns.heatmap(
+        correlation,
+        annot=True,
+        fmt=".2f",
+        cmap="coolwarm",
+        vmin=-1,
+        vmax=1,
+        center=0,
+        square=True,
+        linewidths=0.5,
+        ax=axes,
+    )
+    axes.set_title("Correlation Heatmap")
+    axes.set_xlabel("")
+    axes.set_ylabel("")
+    axes.grid(False)
+    figure.tight_layout()
+    figure.savefig(output_path)
+    plt.close(figure)
+    return output_path
+
 
 
 def generate_all_charts(
@@ -114,9 +212,14 @@ def generate_all_charts(
 
     要求复用四个绘图函数，不要在这里重复绘图代码。
     """
+    paths = [
+        plot_daily_sales(sales, output_dir),
+        plot_category_sales(sales, output_dir),
+        plot_price_quantity_relationship(sales, output_dir),
+        plot_correlation_heatmap(sales, output_dir),
+    ]
+    return paths
 
-    # TODO: 请独立完成
-    raise NotImplementedError
 
 
 def run_checks() -> None:
@@ -142,4 +245,4 @@ if __name__ == "__main__":
     print(f"图表输出目录：{CHART_DIR}")
     print("请完成题目 1～5，并在 analysis_findings.md 中填写分析结论。")
 
-    # run_checks()
+    run_checks()
