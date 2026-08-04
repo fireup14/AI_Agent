@@ -46,10 +46,9 @@ def load_sales(file_path: str | Path = RAW_SALES_FILE) -> pd.DataFrame:
     missing_columns = REQUIRED_COLUMNS.difference(sales.columns)
 
     if missing_columns:
-        raise ValueError("存在缺失列")
+        raise ValueError(f"存在缺失列:{missing_columns}")
 
     return sales
-
 
 def inspect_sales(sales: pd.DataFrame) -> None:
     """题目 2：检查数据结构与质量。
@@ -64,7 +63,7 @@ def inspect_sales(sales: pd.DataFrame) -> None:
     本函数只做检查和输出，不修改 sales。
     """
     print("---------------------数值head---------------------")
-    print(sales.head(3))
+    print(sales.head())
     print("---------------------数值结构---------------------")
     sales.info()
     print("---------------------数值统计---------------------")
@@ -74,8 +73,6 @@ def inspect_sales(sales: pd.DataFrame) -> None:
     print(sales.isna().sum())
     print("---------------------repeat---------------------")
     print(f"重复行数量：{sales.duplicated().sum()}")
-
-
 
 def clean_sales(sales: pd.DataFrame) -> pd.DataFrame:
     """题目 3：清洗原始销售数据。
@@ -152,24 +149,45 @@ def select_sales(
 
     return select
 
-
-
 def summarize_by_category(sales: pd.DataFrame) -> pd.DataFrame:
     """题目 5：按品类分组聚合。
 
     使用 groupby() 和 agg()，为每个 category 计算：
-    1. order_count：订单数量；
-    2. total_quantity：商品总数量；
-    3. average_unit_price：平均单价；
-    4. total_sales：销售总额。
+    1. order_count ：订单数量；
+    2. total_quantity ：商品总数量；
+    3. average_unit_price ：平均单价；
+    4. total_sales ：销售总额。
 
     最终按 total_sales 从高到低排序。
     """
-    # grouped = sales.groupby("category")
-    # sales.groupby("category")["sales_amount"].sum()
-    # print(grouped.head(3))
-
+    ### 方法一 ###
+    # grouped_sales_amount = sales.groupby("category")["sales_amount"].sum()
+    # grouped_unit_price = sales.groupby("category")["unit_price"].mean()
+    # grouped_quantity = sales.groupby("category")["quantity"].sum()
+    # grouped_order_count = sales.groupby("category").size()
+    # grouped = pd.DataFrame({
+    #     "order_count": grouped_order_count,
+    #     "total_quantity": grouped_quantity,
+    #     "average_unit_price": grouped_unit_price,
+    #     "total_sales": grouped_sales_amount,
+    # })
+    # grouped = grouped.sort_values(by="total_sales", ascending=False)
+    # print(grouped.head())
     # return grouped
+
+    ### 方法二 ###
+    summary = sales.groupby("category",as_index=False,).agg(
+        order_count=("order_id", "count"),
+        total_quantity=("quantity", "sum"),
+        average_unit_price=("unit_price", "mean"),
+        total_sales=("sales_amount", "sum"),
+    )
+    summary = summary.sort_values(
+        by = "total_sales",
+        ascending = False,
+    )
+    summary = summary.reset_index(drop=True)
+    return summary
 
 def top_orders(sales: pd.DataFrame, count: int = 5) -> pd.DataFrame:
     """题目 6：返回销售额最高的 count 个订单。
@@ -177,10 +195,23 @@ def top_orders(sales: pd.DataFrame, count: int = 5) -> pd.DataFrame:
     count 小于或等于 0 时抛出 ValueError。
     结果至少包含 order_id、category、product 和 sales_amount。
     """
+    if count <= 0:
+        raise ValueError("count 小于或等于 0")
+    else:
+        count = min(count, sales.shape[0])
 
-    # TODO: 请独立完成
-    raise NotImplementedError
+    ### 方法一 ###
+    # top = sales.sort_values(
+    #     by = "sales_amount",
+    #     ascending=False,
+    # ).head(count).reset_index(drop = True)
+    # top = top[["order_id", "category", "product", "sales_amount"]].copy()
+    # return top
 
+    ### 方法二 ###
+    top = sales.nlargest(count,"sales_amount",keep="first",).reset_index(drop = True)
+    top = top[["order_id", "category", "product", "sales_amount"]].copy()
+    return top
 
 def merge_category_info(
     summary: pd.DataFrame,
@@ -194,9 +225,26 @@ def merge_category_info(
     3. 验证合并前后汇总表行数不变；
     4. 返回合并结果。
     """
+    category_info = pd.read_csv(category_file)
 
-    # TODO: 请独立完成
-    raise NotImplementedError
+    merged = pd.merge(
+        summary,
+        category_info,
+        on = "category",
+        how = "left",
+        validate = "one_to_one",
+    )
+
+    before_count = len(summary)
+    after_count = len(merged)
+    if before_count != after_count:
+        raise ValueError("合并前后汇总表行数不同")
+
+    return merged
+
+
+
+
 
 
 def run_checks() -> None:
@@ -215,27 +263,27 @@ def run_checks() -> None:
     assert (cleaned["quantity"] > 0).all()
     assert "sales_amount" in cleaned.columns
 
-    # expected = pd.read_csv(CLEAN_SALES_FILE, parse_dates=["order_date"])
-    # pd.testing.assert_frame_equal(
-    #     cleaned.reset_index(drop=True),
-    #     expected.reset_index(drop=True),
-    #     check_dtype=False,
-    # )
+    expected = pd.read_csv(CLEAN_SALES_FILE, parse_dates=["order_date"])
+    pd.testing.assert_frame_equal(
+        cleaned.reset_index(drop=True),
+        expected.reset_index(drop=True),
+        check_dtype=False,
+    )
 
-    # summary = summarize_by_category(cleaned)
-    # assert {
-    #     "category",
-    #     "order_count",
-    #     "total_quantity",
-    #     "average_unit_price",
-    #     "total_sales",
-    # }.issubset(summary.columns)
+    summary = summarize_by_category(cleaned)
+    assert {
+        "category",
+        "order_count",
+        "total_quantity",
+        "average_unit_price",
+        "total_sales",
+    }.issubset(summary.columns)
 
-    # assert len(top_orders(cleaned, 5)) == 5
-    # merged = merge_category_info(summary)
-    # assert len(merged) == len(summary)
+    assert len(top_orders(cleaned, 5)) == 5
+    merged = merge_category_info(summary)
+    assert len(merged) == len(summary)
 
-    # print("Pandas 基础验收通过。")
+    print("Pandas 基础验收通过。")
 
 
 if __name__ == "__main__":
