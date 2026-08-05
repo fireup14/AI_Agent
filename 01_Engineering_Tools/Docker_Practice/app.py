@@ -9,7 +9,7 @@ def main():
     print("准备开始循环输出日志，每 2 秒一次，输出 5 次后退出...")
     
     for i in range(1, 6):
-        print(f"[Container Log] Step {i}/5 - Running smoothly...")
+        print(f"[Container Log - v2] Step {i}/5 - Running smoothly...")
         time.sleep(2)
         
     print("运行完成，容器即将退出。")
